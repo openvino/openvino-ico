@@ -45,7 +45,7 @@ module.exports = {
     },
 
     rinkeby: {
-      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, `https://rinkeby.infura.io/v3/03fbf15b6c014bc0b8f0d5a33f942aaf`),
+      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`),
       network_id: 4,       // Ropsten's id
       gas: 5500000,        // Ropsten has a lower block limit than mainnet
       confirmations: 2,    // # of confs to wait between deployments. (default: 0)
@@ -54,7 +54,7 @@ module.exports = {
     },
 
     ropsten: {
-      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, `https://ropsten.infura.io/v3/03fbf15b6c014bc0b8f0d5a33f942aaf`),
+      provider: () => new HDWalletProvider(process.env.PRIVATE_KEY, `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`),
       network_id: 3,       // Ropsten's id
       gas: 5500000,        // Ropsten has a lower block limit than mainnet
       confirmations: 2,    // # of confs to wait between deployments. (default: 0)
