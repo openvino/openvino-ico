@@ -6,7 +6,7 @@ const { URLSearchParams } = require('url');
 // Preparing wallet and web3 endpoint (Infura based)
 const Web3 = require('web3');
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const provider = new HDWalletProvider(process.env.PRIVATE_KEY, `https://ropsten.infura.io/v3/` + process.env.INFURA_PROJECT_ID);
+const provider = new HDWalletProvider(process.env.PRIVATE_KEY, process.env.INFURA_URL);
 const web3 = new Web3(provider);
 var BigNumber = web3.utils.BN;
 
@@ -20,6 +20,9 @@ const tokenSourceCode = fs.readFileSync('./contracts/Token.sol', 'utf8');
 const crowdsaleABI = JSON.parse(fs.readFileSync('./abi/CrowdsaleToken.abi', 'utf8'));
 const crowdsaleBIN  = fs.readFileSync('./bin/CrowdsaleToken.bin', 'utf8');
 const crowdsaleSourceCode = fs.readFileSync('./contracts/CrowdsaleToken.sol', 'utf8');
+
+const exchangeFactoryABI = JSON.parse(fs.readFileSync('./abi/ExchangeFactory.abi', 'utf8'));
+const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
 
 var verify = function(key, address, sourcecode, contractname, parameters) {
 
@@ -40,7 +43,7 @@ var verify = function(key, address, sourcecode, contractname, parameters) {
             licenseType: 1
         };
 
-        let response = await axios.post('http://api-ropsten.etherscan.io/api', new URLSearchParams(data));
+        await axios.post('http://api-ropsten.etherscan.io/api', new URLSearchParams(data));
 
     }, 30000);
 
@@ -88,8 +91,7 @@ var verify = function(key, address, sourcecode, contractname, parameters) {
                 process.env.CROWDSALE_OPENNING_TIME, 
                 process.env.CROWDSALE_CLOSING_TIME],
         })
-        .send({ from: accounts[0],
-            });
+        .send({ from: accounts[0] });
 
 
     console.log(`Crowdsale was deployed at address: ${deployedCrowdsale.options.address}`);
@@ -106,7 +108,28 @@ var verify = function(key, address, sourcecode, contractname, parameters) {
                         process.env.CROWDSALE_OPENNING_TIME, 
                         process.env.CROWDSALE_CLOSING_TIME]));
 
-    deployedToken.methods.addMinter(deployedCrowdsale.options.address).send({ from: accounts[0] });
+    await deployedToken.methods.addMinter(deployedCrowdsale.options.address).send({ from: accounts[0] });
+
+    const exchangeFactory = new web3.eth.Contract(exchangeFactoryABI, process.env.EXCHANGE_FACTORY_ADDRESS);
+    await exchangeFactory.methods.createExchange(deployedToken.options.address).send({ from: accounts[0] });
+    let tokenExchangeAddress = await exchangeFactory.methods.getExchange(deployedToken.options.address).call({ from: accounts[0] });
+
+    console.log(`Exchange created at address ${tokenExchangeAddress}`);
+
+
+    await deployedToken.methods.approve(
+        tokenExchangeAddress, 
+        new BigNumber(10).pow(new BigNumber(process.env.TOKEN_DECIMALS)).mul(new BigNumber(process.env.EXCHANGE_LIQUIDITY))
+    ).send({ from: accounts[0] });
+    
+    const exchange = new web3.eth.Contract(exchangeABI, tokenExchangeAddress);
+    await exchange.methods.addLiquidity(
+        1, 
+        new BigNumber(10).pow(new BigNumber(process.env.TOKEN_DECIMALS)).mul(new BigNumber(process.env.EXCHANGE_LIQUIDITY)),
+        process.env.EXCHANGE_DEADLINE
+    ).send({ value: web3.utils.toWei(process.env.CROWDSALE_PRICE, 'ether'), from: accounts[0] });
+
+    console.log(`Liquidity added to exchange ${tokenExchangeAddress}`)
 
     provider.engine.stop();
     

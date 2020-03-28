@@ -13,6 +13,9 @@ COPY deploy/CrowdsaleToken.bin deployment/bin/
 
 COPY contracts/CrowdsaleToken.sol deployment/contracts/
 
+COPY contracts/ExchangeFactory.abi deployment/abi/
+COPY contracts/Exchange.abi deployment/abi/
+
 COPY .env /deployment/
 
 WORKDIR deployment/
