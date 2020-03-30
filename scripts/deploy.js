@@ -29,6 +29,8 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
 
 	console.log(`Attempting to deploy from account: ${accounts[0]}`);
 
+
+    // Deploying ERC20 Token
 	const deployedToken = await new web3.eth.Contract(tokenABI)
 		.deploy({
 			data: '0x' + tokenBIN.toString(),
@@ -43,6 +45,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
 
     console.log(`Token was deployed at address: ${deployedToken.options.address}`);
 
+    // Verify ERC20 Token contract
     verify(process.env.ETHERSCAN_API_KEY, 
             deployedToken.options.address, 
             tokenSourceCode,
@@ -56,6 +59,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
                         process.env.TOKEN_SYMBOL, 
                         process.env.TOKEN_DECIMALS]));
 
+    // Deploying Crowdsale
     const deployedCrowdsale = await new web3.eth.Contract(crowdsaleABI)
         .deploy({
             data: '0x' + crowdsaleBIN.toString(),
@@ -70,6 +74,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
 
     console.log(`Crowdsale was deployed at address: ${deployedCrowdsale.options.address}`);
     
+    // Verify Crowdsale contract
     verify(process.env.ETHERSCAN_API_KEY,
             deployedCrowdsale.options.address,
             crowdsaleSourceCode,
@@ -82,8 +87,10 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
                         process.env.CROWDSALE_OPENNING_TIME, 
                         process.env.CROWDSALE_CLOSING_TIME]));
 
+    // Adding Crowdsale contract as ERC20 Minter
     await deployedToken.methods.addMinter(deployedCrowdsale.options.address).send({ from: accounts[0] });
 
+    // Creating & Retrieving exchange contract for the ERC20 Token
     const exchangeFactory = new web3.eth.Contract(exchangeFactoryABI, process.env.EXCHANGE_FACTORY_ADDRESS);
     await exchangeFactory.methods.createExchange(deployedToken.options.address).send({ from: accounts[0] });
     let tokenExchangeAddress = await exchangeFactory.methods.getExchange(deployedToken.options.address).call({ from: accounts[0] });
@@ -91,11 +98,13 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
     console.log(`Exchange created at address ${tokenExchangeAddress}`);
 
 
+    // Allowing to add initial token supply to the exchange
     await deployedToken.methods.approve(
         tokenExchangeAddress, 
         new BigNumber(10).pow(new BigNumber(process.env.TOKEN_DECIMALS)).mul(new BigNumber(process.env.EXCHANGE_LIQUIDITY))
     ).send({ from: accounts[0] });
     
+    // Adding liquidity to the exchange contract
     const exchange = new web3.eth.Contract(exchangeABI, tokenExchangeAddress);
     await exchange.methods.addLiquidity(
         1, 
