@@ -1,12 +1,11 @@
 require('dotenv').config()
-const https = require('https')
-const axios = require('axios')
-const { URLSearchParams } = require('url');
+
+const { verify, getInfuraUrl } = require('./utils');
 
 // Preparing wallet and web3 endpoint (Infura based)
 const Web3 = require('web3');
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const provider = new HDWalletProvider(process.env.PRIVATE_KEY, process.env.INFURA_URL);
+const provider = new HDWalletProvider(process.env.PRIVATE_KEY, getInfuraUrl());
 const web3 = new Web3(provider);
 var BigNumber = web3.utils.BN;
 
@@ -23,31 +22,6 @@ const crowdsaleSourceCode = fs.readFileSync('./contracts/CrowdsaleToken.sol', 'u
 
 const exchangeFactoryABI = JSON.parse(fs.readFileSync('./abi/ExchangeFactory.abi', 'utf8'));
 const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
-
-var verify = function(key, address, sourcecode, contractname, parameters) {
-
-    setTimeout(async function() {
-        const data = {
-            apikey: key,
-            module: 'contract',
-            action: 'verifysourcecode',
-            contractaddress: address,
-            sourceCode: sourcecode,
-            codeformat: 'solidity-single-file',
-            contractname: contractname,
-            compilerversion: 'v0.5.15+commit.6a57276f',
-            optimizationUsed: 1,
-            runs: 200,
-            constructorArguements: parameters.substring(2),
-            evmversion: 'istanbul',
-            licenseType: 1
-        };
-
-        await axios.post('http://api-ropsten.etherscan.io/api', new URLSearchParams(data));
-
-    }, 30000);
-
-};
 
 (async () => {
 
