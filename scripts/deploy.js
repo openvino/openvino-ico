@@ -25,10 +25,9 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
 
 (async () => {
 
-	const accounts = await web3.eth.getAccounts();
+    const accounts = await web3.eth.getAccounts();
 
 	console.log(`Attempting to deploy from account: ${accounts[0]}`);
-
 
     // Deploying ERC20 Token
 	const deployedToken = await new web3.eth.Contract(tokenABI)
@@ -44,7 +43,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
         .send({ from: accounts[0] });
 
     console.log(`Token was deployed at address: ${deployedToken.options.address}`);
-
+   
     // Verify ERC20 Token contract
     verify(process.env.ETHERSCAN_API_KEY, 
             deployedToken.options.address, 
@@ -60,6 +59,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
                         process.env.TOKEN_DECIMALS]));
 
     // Deploying Crowdsale
+ 
     const deployedCrowdsale = await new web3.eth.Contract(crowdsaleABI)
         .deploy({
             data: '0x' + crowdsaleBIN.toString(),
@@ -98,7 +98,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
     console.log(`Exchange created at address ${tokenExchangeAddress}`);
 
 
-    // Allowing to add initial token supply to the exchange
+    /*Allowing to add initial token supply to the exchange
     await deployedToken.methods.approve(
         tokenExchangeAddress, 
         new BigNumber(10).pow(new BigNumber(process.env.TOKEN_DECIMALS)).mul(new BigNumber(process.env.EXCHANGE_LIQUIDITY))
@@ -112,7 +112,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
         process.env.EXCHANGE_DEADLINE
     ).send({ value: web3.utils.toWei(process.env.CROWDSALE_PRICE, 'ether'), from: accounts[0] });
 
-    console.log(`Liquidity added to exchange ${tokenExchangeAddress}`)
+    console.log(`Liquidity added to exchange ${tokenExchangeAddress}`)*/
 
     provider.engine.stop();
     
