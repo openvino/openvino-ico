@@ -33,24 +33,21 @@ var verify = function(key, address, sourcecode, contractname, parameters) {
 };
 
 var getInfuraUrl = function() {
-    switch (parseInt(process.env.NETWORK_ID)) {
-        case 1:
+    switch (process.env.NETWORK_ID) {
+        case "mainnet":
             return `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
-        case 3:
-            return `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
-        case 4:
-            return `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
+        case "sepolia":
+            return `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
+
     }
 };
 
 var getEtherscanUrl = function() {
-    switch (parseInt(process.env.NETWORK_ID)) {
-        case 1:
-            return `http://api.etherscan.io`;
-        case 3:
-            return `http://api-ropsten.etherscan.io`;
-        case 4:
-            return `http://api-rinkeby.etherscan.io`;
+    switch (process.env.NETWORK_ID) {
+        case "mainnet":
+            return `https://api.etherscan.io`;
+        case "sepolia":
+            return `https://api-sepolia.etherscan.io`;
     }
 };
 

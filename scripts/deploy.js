@@ -90,12 +90,12 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
     // Adding Crowdsale contract as ERC20 Minter
     await deployedToken.methods.addMinter(deployedCrowdsale.options.address).send({ from: accounts[0] });
 
-    // Creating & Retrieving exchange contract for the ERC20 Token
-    const exchangeFactory = new web3.eth.Contract(exchangeFactoryABI, process.env.EXCHANGE_FACTORY_ADDRESS);
-    await exchangeFactory.methods.createExchange(deployedToken.options.address).send({ from: accounts[0] });
-    let tokenExchangeAddress = await exchangeFactory.methods.getExchange(deployedToken.options.address).call({ from: accounts[0] });
+    //Creating & Retrieving exchange contract for the ERC20 Token
+    //const exchangeFactory = new web3.eth.Contract(exchangeFactoryABI, process.env.EXCHANGE_FACTORY_ADDRESS);
+    //await exchangeFactory.methods.createExchange(deployedToken.options.address).send({ from: accounts[0] });
+    //let tokenExchangeAddress = await exchangeFactory.methods.getExchange(deployedToken.options.address).call({ from: accounts[0] });
 
-    console.log(`Exchange created at address ${tokenExchangeAddress}`);
+    //console.log(`Exchange created at address ${tokenExchangeAddress}`);
 
 
     /*Allowing to add initial token supply to the exchange
