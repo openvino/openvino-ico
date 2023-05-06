@@ -34,7 +34,7 @@ var verify = function(key, address, sourcecode, contractname, parameters) {
 
 var getInfuraUrl = function() {
     switch (process.env.NETWORK_ID) {
-        case "mainnet":
+        case "ethereum":
             return `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
         case "sepolia":
             return `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
@@ -44,7 +44,7 @@ var getInfuraUrl = function() {
 
 var getEtherscanUrl = function() {
     switch (process.env.NETWORK_ID) {
-        case "mainnet":
+        case "ethereum":
             return `https://api.etherscan.io`;
         case "sepolia":
             return `https://api-sepolia.etherscan.io`;
