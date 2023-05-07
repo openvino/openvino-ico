@@ -10,5 +10,10 @@ docker build -t deployer . > /dev/null 2>&1
 echo "\n 3) Deploying and verifying the smart contracts...\n"
 docker run deployer --name deployer
 
+echo "\n 4) Cleaning the setup...\n"
+
+docker rmi -f node:13.11.0 ethereum/solc:0.5.15 deployer > /dev/null 2>&1
+rm -rf deploy> /dev/null 2>&1
+
 
 

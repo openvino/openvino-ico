@@ -8,6 +8,7 @@ Generic code to automatically deploy the OpenVino's ICO & Crowdsale.
  - Docker installed
  - Infura Project ID
  - EtherScan API Key
+ - PolygonScan API Key
 
 ## Setup
 Clone this repository
@@ -19,12 +20,13 @@ Set up .env file
 
     cp .env.example .env
 
-Fill the required parameters in the .env file
+Fill the required parameters in the .env file, you'll find further information in the .env.example file
 
     INFURA_PROJECT_ID=
     NETWORK_ID=
     PRIVATE_KEY=
     ETHERSCAN_API_KEY=
+    POLYGONSCAN_API_KEY=
     
     TOKEN_NAME=Test 
     TOKEN_SYMBOL=
@@ -43,7 +45,7 @@ Fill the required parameters in the .env file
     EXCHANGE_ETH_ADDED=
     EXCHANGE_DEADLINE=
 
-Run the deploy script:
+Run the deployment script:
 
     bash scripts/deploy.sh
 

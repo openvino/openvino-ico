@@ -32,8 +32,36 @@ var verify = function(key, address, sourcecode, contractname, parameters) {
 
 };
 
+var getEtherscanUrl = function() {
+    switch (process.env.NETWORK_ID) {
+        case "mumbai":
+            return `https://api-testnet.polygonscan.com`;
+        case "polygon":
+            return `https://api.polygonscan.com/`
+        case "ethereum":
+            return `https://api.etherscan.io`;
+        case "sepolia":
+            return `https://api-sepolia.etherscan.io`;
+    }
+};
+
+var getEtherscanApiKey = function () {
+    switch (process.env.NETWORK_ID) {
+        case "mumbai":
+        case "polygon":
+            return `${process.env.POLYGONSCAN_API_KEY}`;
+        case "ethereum":
+        case "sepolia":
+            return `${process.env.ETHERSCAN_API_KEY}`;
+    }
+}
+
 var getInfuraUrl = function() {
     switch (process.env.NETWORK_ID) {
+        case "mumbai":
+            return `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
+        case "polygon":
+            return `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
         case "ethereum":
             return `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`;
         case "sepolia":
@@ -42,17 +70,23 @@ var getInfuraUrl = function() {
     }
 };
 
-var getEtherscanUrl = function() {
+var getChainId = function() {
     switch (process.env.NETWORK_ID) {
+        case "mumbai":
+            return 80001;
+        case "polygon":
+            return 137;
         case "ethereum":
-            return `https://api.etherscan.io`;
+            return 1;
         case "sepolia":
-            return `https://api-sepolia.etherscan.io`;
+            return 11155111;
     }
 };
 
 module.exports = {
     verify,
     getInfuraUrl,
-    getEtherscanUrl
+    getChainId,
+    getEtherscanUrl,
+    getEtherscanApiKey,
 }

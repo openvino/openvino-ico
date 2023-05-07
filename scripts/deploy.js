@@ -1,6 +1,7 @@
 require('dotenv').config()
 
-const { verify, getInfuraUrl } = require('./utils');
+const { verify, getInfuraUrl, getEtherscanApiKey, getEtherscanUrl, getChainId} = require('./utils');
+const utils = require('./utils');
 
 // Preparing wallet and web3 endpoint (Infura based)
 const Web3 = require('web3');
@@ -40,12 +41,12 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
                 process.env.TOKEN_SYMBOL, 
                 process.env.TOKEN_DECIMALS]
         })
-        .send({ from: accounts[0] });
+        .send({ from: accounts[0], chainId: utils.getChainId()});
 
     console.log(`Token was deployed at address: ${deployedToken.options.address}`);
    
     // Verify ERC20 Token contract
-    verify(process.env.ETHERSCAN_API_KEY, 
+    verify(getEtherscanApiKey(),
             deployedToken.options.address, 
             tokenSourceCode,
             'Token', 
@@ -69,13 +70,13 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
                 process.env.CROWDSALE_OPENNING_TIME, 
                 process.env.CROWDSALE_CLOSING_TIME],
         })
-        .send({ from: accounts[0] });
+        .send({ from: accounts[0], chainId: utils.getChainId()});
 
 
     console.log(`Crowdsale was deployed at address: ${deployedCrowdsale.options.address}`);
     
     // Verify Crowdsale contract
-    verify(process.env.ETHERSCAN_API_KEY,
+    verify(getEtherscanApiKey(),
             deployedCrowdsale.options.address,
             crowdsaleSourceCode,
             'CrowdsaleToken',
@@ -88,7 +89,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
                         process.env.CROWDSALE_CLOSING_TIME]));
 
     // Adding Crowdsale contract as ERC20 Minter
-    await deployedToken.methods.addMinter(deployedCrowdsale.options.address).send({ from: accounts[0] });
+    await deployedToken.methods.addMinter(deployedCrowdsale.options.address).send({ from: accounts[0], chainId: utils.getChainId() });
 
     //Creating & Retrieving exchange contract for the ERC20 Token
     //const exchangeFactory = new web3.eth.Contract(exchangeFactoryABI, process.env.EXCHANGE_FACTORY_ADDRESS);

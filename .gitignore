@@ -106,3 +106,7 @@ dist
 #Truffle
 
 build/
+
+#Extra
+.DS_STORE
+.idea
