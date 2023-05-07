@@ -110,3 +110,4 @@ build/
 #Extra
 .DS_STORE
 .idea
+deploy/
