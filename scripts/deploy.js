@@ -28,7 +28,7 @@ const exchangeABI = JSON.parse(fs.readFileSync('./abi/Exchange.abi', 'utf8'));
 
     const accounts = await web3.eth.getAccounts();
 
-	console.log(`Attempting to deploy from account: ${accounts[0]}`);
+	console.log(`Attempting to deploy from account to ${process.env.NETWORK_ID} (${getChainId()}): ${accounts[0]}`);
 
     // Deploying ERC20 Token
 	const deployedToken = await new web3.eth.Contract(tokenABI)
